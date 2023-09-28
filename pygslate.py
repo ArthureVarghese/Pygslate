@@ -5,7 +5,27 @@ import random
 import urllib.parse
 import json
 
+'''
+Copyright (c) 2023 Arthure Antony
 
+Pygslate - Proof of Concept Disclaimer
+
+This software, Pygslate, is a proof of concept project created for educational and research purposes. 
+It is not intended for use in any unethical, illegal, or malicious activities. 
+The author(s) of this software disclaim any responsibility for the misuse or unethical use of this code.
+
+Intended Use:
+Pygslate is intended to demonstrate concepts related to reverse engineering Google's browser-based translation. 
+It is suitable for educational and research purposes only.
+
+Limitations:
+1. This software should not be used to engage in any activities that violate ethical standards or laws.
+2. The author(s) do not endorse, support, or condone any unethical or illegal use of this software.
+3. Users are solely responsible for their use of Pygslate and must adhere to applicable laws and ethical guidelines.
+
+By using Pygslate, you agree to these terms and limitations. The author(s) disclaim any liability for any consequences resulting from the use or misuse of this software.
+
+'''
 class Translator:
     def __init__(self):
         self.session = requests.Session()
@@ -132,4 +152,5 @@ class Translator:
                 data[i] = data[i].lstrip().rstrip()
             return data
         else:
-            print("Error")
+            print("Something went wrong")
+            return None
