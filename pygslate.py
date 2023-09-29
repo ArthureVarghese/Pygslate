@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 import re
 import requests
 from ctypes import c_int
@@ -26,6 +28,8 @@ Limitations:
 By using Pygslate, you agree to these terms and limitations. The author(s) disclaim any liability for any consequences resulting from the use or misuse of this software.
 
 '''
+
+
 class Translator:
     def __init__(self):
         self.session = requests.Session()
@@ -73,7 +77,6 @@ class Translator:
                         d += 1
                         e = 65536 + ((e & 1023) << 10) + (ord(a[d]) & 1023)
                         b.append(e >> 18 | 240)
-                        c += 1
                         b.append(e >> 12 & 63 | 128)
 
                     else:
@@ -87,7 +90,7 @@ class Translator:
         return b
 
     def _getCTTk(self):
-        regex = "(c._ctkk=\'\d+.?\d+\';)"
+        regex = r"(c._ctkk=\'\d+.?\d+\';)"
         data = self.session.get(
             "https://translate.googleapis.com/translate_a/element.js")
         data = re.findall(regex, data.text)
@@ -139,14 +142,23 @@ class Translator:
         return str(b) + '.' + str(b ^ c)
 
     def translate(self, text, sl='auto', tl='en'):
+        if sl != "en":
+            for i,t in enumerate(text):
+                text[i] = urllib.parse.quote(text[i])
         tk = self._getTK("".join(text))
         url = f"https://translate.googleapis.com/translate_a/t?anno=3&client=te_lib&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=vTE_20230926&sl={sl}&tl={tl}&tc=0&tk={tk}"
         data = {"q": text}
         res = self.session.post(url, data=data)
         if res.status_code == 200:
             data = json.loads(res.text)
-            for i in range(len(data)):
-                data[i] = urllib.parse.unquote(data[i])
+            if sl == "auto":
+                for i,d in enumerate(data):
+                    data[i] = urllib.parse.unquote(d[0])
+                    data[i] = re.sub(r'(<i>).*(<\/i>)+?', '', data[i])
+                    data[i] = data[i].replace("<b>", "").replace("</b>", "")
+                    data[i] = data[i].lstrip().rstrip()
+            for i,d in enumerate(data):
+                data[i] = urllib.parse.unquote(d)
                 data[i] = re.sub(r'(<i>).*(<\/i>)+?', '', data[i])
                 data[i] = data[i].replace("<b>", "").replace("</b>", "")
                 data[i] = data[i].lstrip().rstrip()
